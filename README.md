@@ -1,3 +1,12 @@
+# nsorg-cli native-image
+
+- created coresponding deps.edn for lein project and made aliases for building uberjar and native image (see Makefile) 
+- needs installed native-image, eg with sdkman on ubuntu (first installs graalvm and then native-image tool)
+
+      sdk install java 21.2.0.r11-grl
+      sdk use java 21.2.0.r11-grl
+      gu install native-image
+
 # nsorg-cli [![Build Status](https://travis-ci.org/immoh/nsorg-cli.svg?branch=master)](https://travis-ci.org/immoh/nsorg-cli)
 
 Organize `ns` form in a way that whitespace and comments are preserved, using the [Clojure CLI](https://clojure.org/guides/deps_and_cli).

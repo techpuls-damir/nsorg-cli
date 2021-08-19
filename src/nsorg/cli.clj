@@ -6,7 +6,8 @@
             [nsorg.cli.terminal :as terminal]
             [nsorg.core :as nsorg])
   (:import (java.io File)
-           (java.nio.file Paths)))
+           (java.nio.file Path Paths))
+  (:gen-class))
 
 (defn clojure-file? [^File file]
   (and (.isFile file)
@@ -21,18 +22,21 @@
        (map io/file)
        (mapcat file-seq)))
 
+(def abs-path
+   (memoize (fn [^File f] (.getAbsolutePath f))))
+
 (defn find-clojure-files [paths excluded-paths]
   (->> paths
        (paths->file-seq)
        (filter clojure-file?)
        (filter (partial excluded-file? (paths->file-seq excluded-paths)))
-       (sort-by (memfn getAbsolutePath))))
+       (sort-by abs-path)))
 
 (defn ->absolute-path [s]
   (.toAbsolutePath (Paths/get s (into-array String []))))
 
-(defn relativize-path [path]
-  (str (.relativize (->absolute-path "") (->absolute-path path))))
+(defn relativize-path [^Path path]
+  (str (.relativize ^Path (->absolute-path "") (->absolute-path path))))
 
 (defn summarize [{:keys [replace interactive]} {:keys [files errors problems replaces]}]
   (clojure.string/join ", " (keep identity
@@ -47,7 +51,7 @@
                                    (when (pos? replaces)
                                      (format "fixed %s files" replaces))])))
 
-(defn organize-ns-form! [file replace? interactive?]
+(defn organize-ns-form! [^File file replace? interactive?]
   (let [path (relativize-path (.getAbsolutePath file))]
     (try
       (let [original-source (slurp file)
@@ -91,7 +95,7 @@
 
 (defn check
   ([args]
-    (check args nil))
+   (check args nil))
   ([args {:keys [default-paths]}]
    (let [{:keys [options arguments]} (cli/parse-opts args [["-e" "--replace"]
                                                            ["-i" "--interactive"]

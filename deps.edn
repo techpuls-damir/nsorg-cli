@@ -1,0 +1,25 @@
+{:paths ["src"]
+ :deps
+ {org.clojure/clojure {:mvn/version "1.10.2"}
+  clojure-term-colors/clojure-term-colors {:mvn/version "0.1.0"}
+  nsorg/nsorg {:mvn/version "0.2.0"}
+  org.clojure/tools.cli {:mvn/version "0.4.2"}}
+ :aliases {:depstar
+           {:replace-deps
+            {com.github.seancorfield/depstar {:mvn/version "2.0.206"}}
+            :ns-default hf.depstar
+            :exec-fn hf.depstar/uberjar
+            :exec-args {:jar nsorg.jar
+                        :aot true
+                        :compile-ns [nsorg.cli]
+                        :main-class "nsorg.cli"}}
+           :native-image
+           {:main-opts ["-m" "clj.native-image" "nsorg.cli"
+                          "--initialize-at-build-time" "--no-fallback"
+                          ;; optional native image name override
+                          "-H:Name=nsorg"]
+              :jvm-opts ["-Dclojure.compiler.direct-linking=true"]
+              :extra-deps
+              {clj.native-image/clj.native-image
+                {:git/url "https://github.com/taylorwood/clj.native-image.git"
+                   :sha "7708e7fd4572459c81f6a6b8e44c96f41cdd92d4"}}}}}

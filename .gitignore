@@ -5,4 +5,7 @@ target
 .lein-repl-history
 pom.xml
 pom.xml.asc
-
+.cpcache
+.lsp
+classes/
+/nsorg*
